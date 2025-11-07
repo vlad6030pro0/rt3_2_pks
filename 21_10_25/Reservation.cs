@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -115,6 +116,7 @@ namespace _21_10_25
             {
                 tableReserv.times[reservTime[i - 1]] = null;
             }
+            Console.WriteLine("Бронирование успешно отредактировано!");
         }
         public void CancelReserv()
         {
@@ -122,11 +124,13 @@ namespace _21_10_25
             {
                 tableReserv.times[reservTime[i - 1]] = null;
             }
+            Console.WriteLine("Бронирование успешно отменено!");
         }
 
         public void PrintInfo()
         {
-            Console.WriteLine($"ID {clientId} NAME {clientName} PHONE {clientPhone} TABLE {tableReserv.id} {reservTime[timeNumStart].Split('-')[0]}-{reservTime[timeNumEnd].Split('-')[1]}");
+            //Debug.WriteLine($"TIME ID: {timeNumStart}-{timeNumEnd}");
+            Console.WriteLine($"ID {clientId} NAME {clientName} PHONE {clientPhone} TABLE {tableReserv.id} {reservTime[timeNumStart - 1].Split('-')[0]}-{reservTime[timeNumEnd - 1].Split('-')[1]}");
         }
     }
 }

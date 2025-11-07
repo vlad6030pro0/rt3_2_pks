@@ -11,6 +11,7 @@ namespace _21_10_25
         public readonly int id;
         public string locationName;
         public int seatsCount;
+        public int reservCount;
         public string[] reservTime = {
             "9:00-10:00",
             "10:00-11:00",
@@ -35,6 +36,7 @@ namespace _21_10_25
             this.id = id;
             locationName = locations[location];
             this.seatsCount = seatsCount;
+            reservCount = 0;
 
             for (int i = 0; i < 9; i++)
             {
@@ -48,6 +50,12 @@ namespace _21_10_25
         }
         public void ChangeInfo()
         {
+            UpdateReservCount();
+            if(reservCount > 0)
+            {
+                Console.WriteLine("Невозможно изменить информацию о столе на который есть бронирования.\nВозврат в главное меню.");
+                return;
+            }
             Console.WriteLine("Список расположений для столика:");
             for (int i = 0; i < locations.Length; i++)
             {
@@ -67,6 +75,7 @@ namespace _21_10_25
             {
                 seatsCount = int.Parse(newSeatsCount);
             }
+            Console.WriteLine("Информация о столике обновлена!");
         }
         public void PrintInfo()
         {
@@ -107,6 +116,10 @@ namespace _21_10_25
 
             info += new string('*', starsNum) + "\n" + idLine + locationLine + seatsLine + reservsLine + new string('*', starsNum);
             Console.WriteLine(info);
+        }
+        public void UpdateReservCount()
+        {
+            reservCount = times.Where(x => x.Value != null).Count();
         }
     }
 }

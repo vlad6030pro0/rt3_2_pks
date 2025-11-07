@@ -1,17 +1,32 @@
 ﻿using _21_10_25;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
-internal class Program
+public class Program
 {
     public static List<Table> tables = new List<Table>();
     public static List<Reservation> reservs = new List<Reservation>();
-    
+    public static string[] filters = new string[] {"none", "none", "none"}; // [0] - seatsCount, [1] - location, [2] - time
+    public static string[] reservTime = {
+        "9:00-10:00",
+        "10:00-11:00",
+        "11:00-12:00",
+        "12:00-13:00",
+        "13:00-14:00",
+        "14:00-15:00",
+        "15:00-16:00",
+        "16:00-17:00",
+        "17:00-18:00"
+    };
+    public static List<Table> tablesForReserv = new List<Table>();
+
     private static void Main(string[] args)
     {
         //Не забыть везде прям реально ВЕЗДЕ добавить валидацию
         //Не забыть про комментарий в классе резервации
         //тут что-то должно было быть но я забыл что. Не забыть вспомнить!!!
         //Сделать проверку существования стола при бронировании
-        //Добавить стандарт для ввода номера телефона(например через регулярное выражение)
+        //Добавить стандарт для ввода номера телефона и времени для бронирования(например через регулярное выражение)
         //Починить выход из системы
         //Везде добавить счётчик попыток ввода(как в удалении бронирования)
         //Сделать красивый вывод информации о бронировании
@@ -19,13 +34,28 @@ internal class Program
         //Добавить изменение название окна в зависимости от текущего действия
         //Отредактировать вывод занятого времени в создании/изменении брони
         //В поиске брони по номеру сделать проверку на null
+        //Вынести вывод информации и ввод данных в методы классов
+        //При удалении столика/бронирования из списка может возникнуть ошибка при дальнейшей работе из-за нарушения упорядочивания(поиск по id например). Переделать
+        //Вынести проверку свободен ли столик в указанное время в отдельный метод
+        //Добавить возможность ввода промежутка для количества мест, локации, нескольких промежутков времени(необязательно но хочу очень)
+        //Где-то в системе фильтров есть ошибка(в выборе времени)
         Console.WriteLine("Добро пожаловать в систему бронирования!");
-        string helpMessage = "Команды:\n\t1 - создание столиков\n\t2 - список столиков\n\t3 - редактирование столика\n\t4 - создание бронирования\n\t5 - список всех бронирований" +
-            "\n\t6 - изменение бронирования\n\t7 - отмена бронирования\n\t8 - поиск брони по номеру\n\t0 - выход из системы бронирования";
+        string helpMessage = "Команды:\n\t1 - создание столиков" +
+                                     "\n\t2 - список столиков" +
+                                     "\n\t3 - редактирование столика" +
+                                     "\n\t4 - поиск столика по фильтру" +
+                                     "\n\t5 - поиск столика по номеру" +
+                                     "\n\t6 - создание бронирования" +
+                                     "\n\t7 - список всех бронирований" +
+                                     "\n\t8 - изменение бронирования" +
+                                     "\n\t9 - поиск бронирования по номеру" +
+                                     "\n\t0 - отмена бронирования" +
+                                     "\n\tq - выход из системы бронирования";
         while (true)
         {
             Console.Write(helpMessage + "\nВведите команду: ");
             string command = Console.ReadLine();
+            //Debug.WriteLine($"COMMAND: {command}");
             Console.Clear();
             switch (command)
             {
@@ -39,21 +69,27 @@ internal class Program
                     TablesChanger();
                     break;
                 case ("4"):
-                    ReservsCreator();
+                    FindTableAtFilter();
                     break;
                 case ("5"):
-                    ReservsInfoPrinter();
+                    FindTableAtId();
                     break;
                 case ("6"):
-                    ReservChanger();
+                    ReservsCreator();
                     break;
                 case ("7"):
-                    ReservDeleter();
+                    ReservsInfoPrinter();
                     break;
                 case ("8"):
+                    ReservChanger();
+                    break;
+                case ("9"):
                     FindReservAtPhone();
                     break;
                 case ("0"):
+                    ReservDeleter();
+                    break;
+                case ("q"):
                     Environment.Exit(0);
                     break;
             }
@@ -62,23 +98,186 @@ internal class Program
             Console.Clear();
         }
     }
-    public static void FindReservAtPhone()
+    public static void FindTableAtFilter()
     {
-        Console.Write("Введите последние 4 цифры вашего телефона: ");
-        string phone = Console.ReadLine();
-        Reservation reserv = null;
-        foreach(var reservation in reservs)
+        string info = "Список возможных фильтров:\n\t1 - Добавить фильтр на количество сидячих мест\n\t2 - Добавить фильтр на расположение" +
+            "\n\t3 - Добавить фильтр на время/промежуток времени для брони" +
+            "\n\t4 - Посмотреть подходящие столики\n\t5 - Список ваших фильтров\n\t6 - Сброс фильтров\n\tq - Выход из системы фильтров\n" + new string('-', 40);
+        while (true)
         {
-            string clientPhone = new string(new char[] { reservation.clientPhone[^4], reservation.clientPhone[^3], reservation.clientPhone[^2], reservation.clientPhone[^1] });
-            if(clientPhone == phone)
+            Console.WriteLine("---Система поиска столиков по фильтру---");
+            Console.WriteLine(info);
+            Console.Write("Введите нужное действие: ");
+            string command = Console.ReadLine();
+            switch (command)
             {
-                reserv = reservation;
-                break;
+                case ("1"):
+                    Console.Write("Введите интересующее Вас количество мест: ");
+                    int seatsCount = int.Parse(Console.ReadLine());
+                    filters[0] = seatsCount.ToString();
+                    break;
+                case ("2"):
+                    Console.WriteLine("Список доступных расположений столика:");
+                    for (int i = 0; i < Table.locations.Length; i++)
+                    {
+                        Console.WriteLine($"\t{i + 1} - {Table.locations[i]}");
+                    }
+                    Console.WriteLine("Введите номер интересующего Вас расположения столика: ");
+                    int location = int.Parse(Console.ReadLine()) - 1;
+                    filters[1] = Table.locations[location];
+                    break;
+                case ("3"):
+                    for (int j = 0; j < reservTime.Length; j++) Console.WriteLine($"{j + 1} - {reservTime[j]}");
+
+                    bool correctTime = false;
+                    string time;
+                    int reservStart = 7632;
+                    int reservEnd = 7632;
+                    Reservation reserv;
+                    List<string> timeReserved;
+                    while (!correctTime)
+                    {
+                        timeReserved = new List<string>();
+                        Console.Write("Введите время брони по номеру из списка. Если хотите забронировать промежуток, то пишите в формате a-b: ");
+                        time = Console.ReadLine();
+
+                        if (time.Contains('-'))
+                        {
+                            reservStart = int.Parse(time.Split('-')[0]);
+                            reservEnd = int.Parse(time.Split('-')[1]);
+                        }
+                        else
+                        {
+                            reservStart = int.Parse(time);
+                            reservEnd = reservStart;
+                        }
+
+                        if (reservStart < 1 || reservStart > 9 || reservEnd < 1 || reservEnd > 9 || reservEnd < reservStart)
+                        {
+                            Console.WriteLine("Введённый промежуток неверен! Вот вам правила указания времени бронирования:\n Время конца бронирования не может быть раньше" +
+                                " времени начала бронирования.\n Указывайте только написанные значения, а не выдумывайте какие-то большие/маленькие цифры/числа.");
+                        }
+                        else
+                        {
+                            correctTime = true;
+                        }
+
+                        if (!correctTime)
+                        {
+                            reservStart = 7632;
+                            reservEnd = 7632;
+                        }
+                    }
+                    filters[2] = $"{reservStart}-{reservEnd}";
+                    break;
+                case ("4"):
+                    List<Table> correctTables = tables;
+                    List<Table> newCorrectTables = tables;
+                    if (filters[0] != "none")
+                    {
+                        correctTables = correctTables.Where(x => x.seatsCount == int.Parse(filters[0])).ToList();
+                    }
+                    if(filters[1] != "none")
+                    {
+                        correctTables = correctTables.Where(x => x.locationName ==  filters[1]).ToList();
+                    }
+                    if (filters[2] != "none")
+                    {
+                        //---------------- ошибка из-за обновления списка при переборе(хотя список не обновляется)
+                        reservStart = int.Parse(filters[2].Split('-')[0]);
+                        reservEnd = int.Parse(filters[2].Split('-')[1]);
+
+                        foreach(var table in correctTables)
+                        {
+                            int freeTimes = 0;
+                            for (int i = reservStart; i <= reservEnd; i++)
+                            {
+                                if (table.times[reservTime[i - 1]] == null)
+                                {
+                                    freeTimes++;
+                                }
+                            }
+                            if(freeTimes == (1 + reservEnd - reservStart))
+                            {
+                                newCorrectTables.Add(table);
+                            }
+                        }
+                        correctTables.AddRange(newCorrectTables);
+                    }
+                    foreach(var table in correctTables)
+                    {
+                        table.PrintInfo();
+                    }
+                    break;
+                case ("5"):
+                    if(filters.Where(x => x == "none").Count() < 3)
+                    {
+                        Console.WriteLine("Список ваших фильтров:");
+                        for (int i = 0; i < filters.Length; i++)
+                        {
+                            if (filters[i] != "none")
+                            {
+                                Console.WriteLine($"\tКоличество сидячих мест: {filters[i]}");
+                            }
+                            else if (filters[i] != "none")
+                            {
+                                Console.WriteLine($"\tРасположение столика: {filters[i]}");
+                            }
+                            else if (filters[i] != "none")
+                            {
+                                Console.WriteLine($"\tВремя: {reservTime[int.Parse(filters[i].Split('-')[0])].Split('-')[0]}-{reservTime[int.Parse(filters[i].Split('-')[1])].Split('-')[1]}");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("У вас нет фильтров!");
+                    }
+                    break;
+                case ("6"):
+                    for (int i = 0; i < filters.Length; i++) filters[i] = "none";
+                    break;
+                case ("q"):
+                    return;
+            }
+            Console.WriteLine("Нажмите любую клавишу для продолжения...");
+            Console.ReadKey();
+            Console.Clear();
+        }
+    }
+    public static void FindTableAtId()
+    {
+        Console.Write("Введите номер столика: ");
+        int id = int.Parse(Console.ReadLine());
+        Table table = tables[id - 1];
+        table.PrintInfo();
+    }
+    public static Reservation FindReservAtPhone()
+    {
+        Reservation reserv = null;
+        
+        for (int i = 1; i <= 3; i++)
+        {
+            Console.Write("Введите последние 4 цифры вашего телефона: ");
+            string phone = Console.ReadLine();
+
+            foreach (var reservation in reservs)
+            {
+                string clientPhone = new string(new char[] { reservation.clientPhone[^4], reservation.clientPhone[^3], reservation.clientPhone[^2], reservation.clientPhone[^1] });
+                if (clientPhone == phone)
+                {
+                    reserv = reservation;
+                    break;
+                }
+            }
+            if (reserv == null)
+            {
+                Console.WriteLine($"Проверьте корретность ввода номера телефона и повторите.(попытка {i}/3)");
+                continue;
             }
         }
-        
-        Console.WriteLine("Информация о вашем бронировании:");
-        reserv.PrintInfo();
+        if(reserv == null) Console.WriteLine("Бронирование по указанному номеру не найдено!\nВозврат в главное меню.");
+        return reserv;
     }
     public static void TablesChanger()
     {
@@ -88,47 +287,35 @@ internal class Program
         Table tableForChange = tables[id];
         tableForChange.ChangeInfo();
         tables[id] = tableForChange;
-        Console.WriteLine("Информация о столике обновлена!");
     }
     public static void ReservChanger()
     {
         Console.WriteLine("---Система редактирования бронирований---");
-        Reservation reservForChange;
-        for (int i = 1; i <= 3; i++)
+        Reservation reservForChange = FindReservAtPhone();
+        if (reservForChange == null) return;
+        
+        reservs.Remove(reservForChange);
+        reservForChange.ChangeReserv();
+        reservs.Add(reservForChange);
+        Table tableReserved = reservForChange.tableReserv;
+        for (int j = reservForChange.timeNumStart; j <= reservForChange.timeNumEnd; j++)
         {
-            Console.Write("Введите ваш номер телефона для редактирования бронирования: ");
-            string phone = Console.ReadLine();
-
-            reservForChange = reservs.Where(x => x.clientPhone == phone).FirstOrDefault();
-            if (reservForChange == null)
-            {
-                Console.WriteLine($"Проверьте корретность ввода номера телефона и повторите.(попытка {i}/3)");
-                continue;
-            }
-
-            reservs.Remove(reservForChange);
-            reservForChange.ChangeReserv();
-            reservs.Add(reservForChange);
-            Table tableReserved = reservForChange.tableReserv;
-            for (int j = reservForChange.timeNumStart; j <= reservForChange.timeNumEnd; j++)
-            {
-                tableReserved.times[reservForChange.reservTime[j - 1]] = reservForChange;
-            }
-            tables[tableReserved.id] = tableReserved;
-            Console.WriteLine("Бронирование успешно отредактировано!");
-            return;
+            tableReserved.times[reservForChange.reservTime[j - 1]] = reservForChange;
         }
-        Console.WriteLine("Ошибка редактирования бронирования. Возврат в главное меню.");
+        tables[tableReserved.id] = tableReserved;
+
+        Console.WriteLine("Ошибка редактирования бронирования.\nВозврат в главное меню.");
     }
     public static void ReservDeleter()
     {
         Console.WriteLine("---Система отмены бронирований---");
+        Reservation reservForDelete;
         for (int i = 1; i <= 3; i++)
         {
             Console.Write("Введите ваш номер телефона для отмены бронирования: ");
             string phone = Console.ReadLine();
 
-            Reservation reservForDelete = reservs.Where(x => x.clientPhone == phone).FirstOrDefault();
+            reservForDelete = reservs.Where(x => x.clientPhone == phone).FirstOrDefault();
             if(reservForDelete == null)
             {
                 Console.WriteLine($"Проверьте корретность ввода номера телефона и повторите.(попытка {i}/3)");
@@ -137,10 +324,10 @@ internal class Program
 
             reservForDelete.CancelReserv();
             reservs.Remove(reservForDelete);
-            Console.WriteLine("Бронирование успешно отменено!");
             return;
         }
-        Console.WriteLine("Ошибка отмены бронирования. Возврат в главное меню.");
+
+        Console.WriteLine("Ошибка отмены бронирования.\nВозврат в главное меню.");
     }
     public static void ReservsInfoPrinter()
     {
@@ -182,17 +369,7 @@ internal class Program
     public static void ReservsCreator()
     {
         Console.WriteLine("---Система создания бронирований---");
-        string[] reservTime = {
-        "9:00-10:00",
-        "10:00-11:00",
-        "11:00-12:00",
-        "12:00-13:00",
-        "13:00-14:00",
-        "14:00-15:00",
-        "15:00-16:00",
-        "16:00-17:00",
-        "17:00-18:00"
-        };
+        
 
         Console.Write("Введите количество бронирований для создания: ");
         int reservsCount = int.Parse(Console.ReadLine());
