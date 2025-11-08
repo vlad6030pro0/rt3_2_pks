@@ -39,6 +39,8 @@ public class Program
         //Вынести проверку свободен ли столик в указанное время в отдельный метод
         //Добавить возможность ввода промежутка для количества мест, локации, нескольких промежутков времени(необязательно но хочу очень)
         //Где-то в системе фильтров есть ошибка(в выборе времени)
+        //Изменить отмену броинрования. Сделать отмену по последним 4 цифрам номера телефона
+        //Везде добавить фразы по типу "Нет активных бронирований", "Нет фильтров" и тд
         Console.WriteLine("Добро пожаловать в систему бронирования!");
         string helpMessage = "Команды:\n\t1 - создание столиков" +
                                      "\n\t2 - список столиков" +
@@ -187,22 +189,34 @@ public class Program
                         reservStart = int.Parse(filters[2].Split('-')[0]);
                         reservEnd = int.Parse(filters[2].Split('-')[1]);
 
-                        foreach(var table in correctTables)
+                        //foreach(var table in correctTables)
+                        //{
+                        //    int freeTimes = 0;
+                        //    for (int i = reservStart; i <= reservEnd; i++)
+                        //    {
+                        //        if (table.times[reservTime[i - 1]] == null)
+                        //        {
+                        //            freeTimes++;
+                        //        }
+                        //    }
+                        //    if(freeTimes == (1 + reservEnd - reservStart))
+                        //    {
+                        //        newCorrectTables.Add(table);
+                        //    }
+                        //}
+                        correctTables = correctTables.Where(x => 
                         {
                             int freeTimes = 0;
                             for (int i = reservStart; i <= reservEnd; i++)
                             {
-                                if (table.times[reservTime[i - 1]] == null)
+                                if (x.times[reservTime[i - 1]] == null)
                                 {
                                     freeTimes++;
                                 }
                             }
-                            if(freeTimes == (1 + reservEnd - reservStart))
-                            {
-                                newCorrectTables.Add(table);
-                            }
-                        }
-                        correctTables.AddRange(newCorrectTables);
+                            return freeTimes == (1 + reservEnd - reservStart);
+                        }).ToList();
+                        //correctTables.AddRange(newCorrectTables);
                     }
                     foreach(var table in correctTables)
                     {
@@ -213,20 +227,17 @@ public class Program
                     if(filters.Where(x => x == "none").Count() < 3)
                     {
                         Console.WriteLine("Список ваших фильтров:");
-                        for (int i = 0; i < filters.Length; i++)
+                        if (filters[0] != "none")
                         {
-                            if (filters[i] != "none")
-                            {
-                                Console.WriteLine($"\tКоличество сидячих мест: {filters[i]}");
-                            }
-                            else if (filters[i] != "none")
-                            {
-                                Console.WriteLine($"\tРасположение столика: {filters[i]}");
-                            }
-                            else if (filters[i] != "none")
-                            {
-                                Console.WriteLine($"\tВремя: {reservTime[int.Parse(filters[i].Split('-')[0])].Split('-')[0]}-{reservTime[int.Parse(filters[i].Split('-')[1])].Split('-')[1]}");
-                            }
+                            Console.WriteLine($"\tКоличество сидячих мест: {filters[0]}");
+                        }
+                        if (filters[1] != "none")
+                        {
+                            Console.WriteLine($"\tРасположение столика: {filters[1]}");
+                        }
+                        if (filters[2] != "none")
+                        {
+                            Console.WriteLine($"\tВремя: {reservTime[int.Parse(filters[2].Split('-')[0])].Split('-')[0]}-{reservTime[int.Parse(filters[2].Split('-')[1])].Split('-')[1]}");
                         }
                     }
                     else
@@ -236,6 +247,7 @@ public class Program
                     break;
                 case ("6"):
                     for (int i = 0; i < filters.Length; i++) filters[i] = "none";
+                    Console.WriteLine("Фильтры успешно сброшены!");
                     break;
                 case ("q"):
                     return;
