@@ -80,7 +80,7 @@ namespace _21_10_25
         public void PrintInfo()
         {
             string info = "";
-            int baseSpace = 5;
+            int baseSpace = Program.StarsNum;
             int starsNum = 63;
 
             string idLine = new string(' ', baseSpace) + "ID: ";
