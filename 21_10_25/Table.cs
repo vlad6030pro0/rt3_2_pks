@@ -44,14 +44,14 @@ namespace _21_10_25
             }
         }
 
-        public static Table CreateTable(int id, int location, int seatsCount)
+        public static void CreateTable(int id, int location, int seatsCount, out Table table)
         {
-            return new Table(id, location, seatsCount);
+            table = new Table(id, location, seatsCount);
         }
-        public void ChangeInfo()
+        public static void TableChange(ref Table table)
         {
-            UpdateReservCount();
-            if(reservCount > 0)
+            table.UpdateReservCount();
+            if(table.reservCount > 0)
             {
                 Console.WriteLine("Невозможно изменить информацию о столе на который есть бронирования.\nВозврат в главное меню.");
                 return;
@@ -64,16 +64,15 @@ namespace _21_10_25
             Console.WriteLine("Вводите новую информацию о столике(Нажмите Enter чтобы оставить прежнее значение):");
             Console.Write("Расположение столика: ");
             string newLocation = Console.ReadLine();
-            Console.Write("Количество мест: ");
-            string newSeatsCount = Console.ReadLine();
-
             if(newLocation != "")
             {
-                locationName = locations[int.Parse(newLocation) - 1];
+                table.locationName = locations[int.Parse(newLocation) - 1];
             }
-            if(newSeatsCount != "")
+            Console.Write("Количество мест: ");
+            string newSeatsCount = Console.ReadLine();
+            if (newSeatsCount != "")
             {
-                seatsCount = int.Parse(newSeatsCount);
+                table.seatsCount = int.Parse(newSeatsCount);
             }
             Console.WriteLine("Информация о столике обновлена!");
         }

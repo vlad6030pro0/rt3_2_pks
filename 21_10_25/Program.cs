@@ -41,7 +41,6 @@ public class Program
         //Не забыть везде прям реально ВЕЗДЕ добавить валидацию. Можно весь ввод данных вынести в отдельный метод где будет производиться проверка
         //Сделать проверку существования блюда при добавлении в заказ
         //Не забыть про комментарий в классе резервации
-        //тут что-то должно было быть но я забыл что. Не забыть вспомнить!!!
         //Сделать проверку существования стола при бронировании
         //Добавить стандарт для ввода номера телефона и времени для бронирования(например через регулярное выражение)
         //Везде добавить счётчик попыток ввода(как в удалении бронирования)
@@ -76,11 +75,12 @@ public class Program
         string helpMessage2 = "Команды:" +
                                      "\n\t1 - создание блюд" +
                                      "\n\t2 - вывод меню" +
-                                     "\n\t3 - удалить блюда" +
-                                     "\n\t4 - создание заказа" +
-                                     "\n\t5 - изменение заказа" +
-                                     "\n\t6 - вывод информации о заказе" +
-                                     "\n\t7 - закрытие заказа(вывод чека)" +
+                                     "\n\t3 - изменить блюдо" +
+                                     "\n\t4 - удалить блюдо" +
+                                     "\n\t5 - создание заказа" +
+                                     "\n\t6 - изменение заказа" +
+                                     "\n\t7 - вывод информации о заказе" +
+                                     "\n\t8 - закрытие заказа(вывод чека)" +
                                      "\n\tq - выход в меню" +
                                      "\n" + new string('-', 40);
         while (true)
@@ -156,18 +156,21 @@ public class Program
                                 MenuPrinter();
                                 break;
                             case ("3"):
-                                DishesDeleter();
+                                DishesChanger();
                                 break;
                             case ("4"):
-                                OrderCreator();
+                                DishesDeleter();
                                 break;
                             case ("5"):
-                                OrderChanger();
+                                OrderCreator();
                                 break;
                             case ("6"):
-                                OrderInfoPrinter();
+                                OrderChanger();
                                 break;
                             case ("7"):
+                                OrderInfoPrinter();
+                                break;
+                            case ("8"):
                                 OrderCloser();
                                 break;
                             case ("q"):
@@ -200,18 +203,28 @@ public class Program
     {
         Console.Write("Введите номер заказа: ");
         int id = int.Parse(Console.ReadLine());
-        orders.FirstOrDefault(x => x.Id == id).OrderChange();
+        Order order = orders.FirstOrDefault(x => x.Id == id);
+        Order.OrderChange(ref order);
     }
     public static void OrderCreator()
     {
         Console.Write("Введите количество создаваемых заказов: ");
         int ordersCount = int.Parse(Console.ReadLine());
+        Order order;
         for (int i = 0; i < ordersCount; i++)
         {
-            orders.Add(Order.CreateOrder(orders.Count()));
+            Order.CreateOrder(orders.Count(), out order);
+            orders.Add(order);
         }
         if (ordersCount == 1) Console.WriteLine("Заказ создан!");
         else Console.WriteLine($"Создано {ordersCount} заказов!");
+    }
+    public static void DishesChanger()
+    {
+        Console.Write("Введите название блюда: ");
+        string title = Console.ReadLine();
+        Dish dish = dishes.FirstOrDefault(x => x.Title == title);
+        Dish.DishChange(ref dish);
     }
     public static void DishesDeleter()
     {
@@ -224,9 +237,11 @@ public class Program
         Console.WriteLine("---Система создания блюд---");
         Console.Write("Введите количество создаваемых блюд: ");
         int dishesCount = int.Parse(Console.ReadLine());
+        Dish dish;
         for (int i = 0; i < dishesCount; i++)
         {
-            dishes.Add(Dish.CreateDish(dishes.Count()));
+            Dish.CreateDish(dishes.Count(), out dish);
+            dishes.Add(dish);
         }
         if (dishesCount == 1) Console.WriteLine("Блюдо успешно создано!");
         else if (dishesCount > 1) Console.WriteLine($"Успешно создано {dishesCount} блюд");
@@ -250,7 +265,6 @@ public class Program
             Console.WriteLine($"{category.Key}:");
             foreach(var dish in category.Value)
             {
-                //menu += $"{category.Title}{new string(' ', 15)}{category.Cost} рублей за порцию\n";
                 dish.PrintInfo();
             }
             Console.WriteLine();
@@ -424,7 +438,7 @@ public class Program
     public static Reservation FindReservAtPhone()
     {
         Reservation reserv = null;
-        
+        int index;
         for (int i = 1; i <= 3; i++)
         {
             Console.Write("Введите последние 4 цифры вашего телефона: ");
@@ -453,19 +467,20 @@ public class Program
         Console.WriteLine("---Система редактирования столиков---");
         Console.Write("Введите номер столика для редактирования: ");
         int id = int.Parse(Console.ReadLine()) - 1;
-        Table tableForChange = tables[id];
-        tableForChange.ChangeInfo();
-        tables[id] = tableForChange;
+        Table table = tables.FirstOrDefault(x => x.id == id);
+        int index = tables.IndexOf(table);
+        Table.TableChange(ref table);
+        tables[index] = table;
     }
     public static void ReservChanger()
     {
         Console.WriteLine("---Система редактирования бронирований---");
         Reservation reservForChange = FindReservAtPhone();
         if (reservForChange == null) return;
-        
-        reservs.Remove(reservForChange);
+
+        int index = reservs.IndexOf(reservForChange);
         reservForChange.ChangeReserv();
-        reservs.Add(reservForChange);
+        reservs[index] = reservForChange;
         Table tableReserved = reservForChange.tableReserv;
         for (int j = reservForChange.timeNumStart; j <= reservForChange.timeNumEnd; j++)
         {
@@ -521,7 +536,7 @@ public class Program
         int tablesCount = int.Parse(Console.ReadLine());
 
         bool locationsPrinted = false;
-
+        Table table;
         for (int i = 0; i < tablesCount; i++)
         {
             if (!locationsPrinted) Console.WriteLine("\t1 - у окна\n\t2 - у прохода\n\t3 - у выхода\n\t4 - в глубине\n\t5 - у туалета");
@@ -529,8 +544,8 @@ public class Program
             int location = int.Parse(Console.ReadLine());
             Console.Write("Введите количество сидячих мест: ");
             int seatsCount = int.Parse(Console.ReadLine());
-
-            tables.Add(Table.CreateTable(tables.Count(), location - 1, seatsCount));
+            Table.CreateTable(tables.Count(), location - 1, seatsCount, out table);
+            tables.Add(table);
         }
         if (tablesCount == 1) Console.WriteLine("Столик успешно создан!");
         else Console.WriteLine($"Успешно создано {tablesCount} столиков!");
@@ -623,11 +638,11 @@ public class Program
 
             if(reservStart == reservEnd)
             {
-                reserv = Reservation.CreateReserv(reservs.Count(), name, phone, reservStart, tableReserved, reservTime);
+                Reservation.CreateReserv(reservs.Count(), name, phone, reservStart, tableReserved, reservTime, out reserv);
             }
             else
             {
-                reserv = Reservation.CreateReserv(reservs.Count(), name, phone, reservStart, reservEnd, tableReserved, reservTime);
+                Reservation.CreateReserv(reservs.Count(), name, phone, reservStart, reservEnd, tableReserved, reservTime, out reserv);
             }
             reservs.Add(reserv);
             for (int j = reserv.timeNumStart; j <= reserv.timeNumEnd; j++)

@@ -29,13 +29,13 @@ namespace _21_10_25
             this.reservTime = reservTime;
         }
 
-        public static Reservation CreateReserv(int id, string name, string phone, int timeNumStart, Table table, string[] reservTime)
+        public static void CreateReserv(int id, string name, string phone, int timeNumStart, Table table, string[] reservTime, out Reservation reserv)
         {
-            return new Reservation(id, name, phone, timeNumStart, timeNumStart, table, reservTime);
+            reserv = new Reservation(id, name, phone, timeNumStart, timeNumStart, table, reservTime);
         }
-        public static Reservation CreateReserv(int id, string name, string phone, int timeNumStart, int timeNumEnd, Table table, string[] reservTime)
+        public static void CreateReserv(int id, string name, string phone, int timeNumStart, int timeNumEnd, Table table, string[] reservTime, out Reservation reserv)
         {
-            return new Reservation(id, name, phone, timeNumStart, timeNumEnd, table, reservTime);
+            reserv = new Reservation(id, name, phone, timeNumStart, timeNumEnd, table, reservTime);
         }
 
         public void ChangeReserv()

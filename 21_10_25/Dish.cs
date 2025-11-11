@@ -28,7 +28,7 @@ namespace _21_10_25
             CookingTime = cookingTime;
             Types = types;
         }
-        public static Dish CreateDish(int id)
+        public static void CreateDish(int id, out Dish dish)
         {
             Console.WriteLine("---Создание нового блюда---");
             Console.Write("Введите название блюда: ");
@@ -54,31 +54,31 @@ namespace _21_10_25
                 types[i] = Console.ReadLine();
             }
 
-            return new Dish(id, title, composition, weight, cost, category, cookingTime, types);
+            dish = new Dish(id, title, composition, weight, cost, category, cookingTime, types);
         }
-        public void DishChange()
+        public static void DishChange(ref Dish dish)
         {
             Console.WriteLine("---Изменение блюда---");
             Console.WriteLine("Чтобы оставить прежнее значение нажмите на Enter.");
             Console.Write("Введите название блюда: ");
             string title = Console.ReadLine();
-            Title = title != "" ? title : Title;
+            dish.Title = title != "" ? title : dish.Title;
             Console.Write("Введите состав блюда: ");
             string composition = Console.ReadLine();
-            Composition = composition != "" ? composition : Composition;
+            dish.Composition = composition != "" ? composition : dish.Composition;
             Console.Write("Введите вес блюда(в формате 100/20/50): ");
             string weight = Console.ReadLine();
-            Weight = weight != "" ? weight : Weight;
+            dish.Weight = weight != "" ? weight : dish.Weight;
             Console.Write("Введите стоимость блюда: ");
             string cost = Console.ReadLine();
-            Cost = cost != "" ? float.Parse(cost) : Cost;
+            dish.Cost = cost != "" ? float.Parse(cost) : dish.Cost;
             Console.WriteLine("Список категорий блюда:\n\t1 - Напиток\n\t2 - Салат\n\t3 - Холодная закуска\n\t4 - Горячая закуска\n\t5 - Суп\n\t6 - Горячее блюдо\n\t7 - Десерт");
             Console.Write("Введите категорию блюда: ");
             string category = Console.ReadLine();
-            Category = category != "" ? (Categories)(int.Parse(category)- 1) : Category;
+            dish.Category = category != "" ? (Categories)(int.Parse(category)- 1) : dish.Category;
             Console.Write("Введите время приготовления блюда(в минутах): ");
             string cookingTime = Console.ReadLine();
-            CookingTime = cookingTime != "" ? int.Parse(cookingTime) : CookingTime;
+            dish.CookingTime = cookingTime != "" ? int.Parse(cookingTime) : dish.CookingTime;
             string[] types;
             Console.Write("Введите количество типов блюда: ");
             string count = Console.ReadLine();

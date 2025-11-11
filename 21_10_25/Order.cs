@@ -30,7 +30,7 @@ namespace _21_10_25
 
         }
 
-        public static Order CreateOrder(int id)
+        public static void CreateOrder(int id, out Order order)
         {
             Console.WriteLine("---Открытие заказа---");
             Console.Write("Введите номер столика: ");
@@ -49,13 +49,13 @@ namespace _21_10_25
                 dishes[i] = Program.dishes.FirstOrDefault(x => x.Title == title);
             }
 
-            return new Order(id, tableId, dishes, comment, startTime, waiterId);
+            order = new Order(id, tableId, dishes, comment, startTime, waiterId);
         } 
-        public void OrderChange()
+        public static void OrderChange(ref Order order)
         {
             Console.WriteLine("Желаете поменять официанта?(Enter, если нет. Введите имя другого официанта, если да)");
             string newWaiter = Console.ReadLine();
-            if(newWaiter != "") WaiterId = Program.Waiters[newWaiter];
+            if(newWaiter != "") order.WaiterId = Program.Waiters[newWaiter];
             Console.Write("Количество блюд для добавления: ");
             int dishCount = int.Parse(Console.ReadLine());
             Dish[] dishes = new Dish[dishCount];
@@ -65,7 +65,7 @@ namespace _21_10_25
                 string title = Console.ReadLine();
                 dishes[i] = Program.dishes.FirstOrDefault(x => x.Title == title);
             }
-            Dishes = Dishes.Concat(dishes).ToArray();
+            order.Dishes = order.Dishes.Concat(dishes).ToArray();
             Console.WriteLine("Заказ обновлён!");
         }
         public void PrintInfo()
