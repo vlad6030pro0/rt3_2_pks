@@ -707,14 +707,15 @@ public class Program
             {
                 if (int.TryParse(Console.ReadLine(), out location) == false)
                 {
-                    Console.WriteLine($"Некорректный ввод количества заказов! Попробуйте ещё раз. (попытка {j + 1}/3)");
+                    Console.WriteLine($"Некорректный ввод номера расположения! Попробуйте ещё раз. (попытка {j + 1}/3)");
+                    location = 7632;
                     continue;
                 }
                 break;
             }
             if (location == 7632)
             {
-                Console.WriteLine("Некорректный ввод количества заказов! Возврат в главное меню.");
+                Console.WriteLine("Некорректный ввод номера расположения! Возврат в главное меню.");
                 return;
             }
             Console.Write("Введите количество сидячих мест: ");
@@ -723,14 +724,14 @@ public class Program
             {
                 if (int.TryParse(Console.ReadLine(), out seatsCount) == false)
                 {
-                    Console.WriteLine($"Некорректный ввод количества заказов! Попробуйте ещё раз. (попытка {j + 1}/3)");
+                    Console.WriteLine($"Некорректный ввод количества сидячих мест! Попробуйте ещё раз. (попытка {j + 1}/3)");
                     continue;
                 }
                 break;
             }
             if (seatsCount == 7632)
             {
-                Console.WriteLine("Некорректный ввод количества заказов! Возврат в главное меню.");
+                Console.WriteLine("Некорректный ввод количества сидячих мест! Возврат в главное меню.");
                 return;
             }
             Table.CreateTable(tables.Count(), location - 1, seatsCount, out table);
