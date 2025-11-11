@@ -41,19 +41,15 @@ public class Program
         //Не забыть везде прям реально ВЕЗДЕ добавить валидацию. Можно весь ввод данных вынести в отдельный метод где будет производиться проверка
         //Сделать проверку существования блюда при добавлении в заказ
         //Не забыть про комментарий в классе резервации
-        //Сделать проверку существования стола при бронировании
         //Добавить стандарт для ввода номера телефона и времени для бронирования(например через регулярное выражение)
         //Везде добавить счётчик попыток ввода(как в удалении бронирования)
         //Сделать красивый вывод информации о бронировании
         //Сделать возможность изменения столика в брони, а не только времени. Посмотреть реализацию в методе редактирования столиков
         //Добавить изменение название окна в зависимости от текущего действия
-        //Отредактировать вывод занятого времени в создании/изменении брони
-        //В поиске брони по номеру сделать проверку на null
         //Вынести вывод информации и ввод данных в методы классов
-        //При удалении столика/бронирования из списка может возникнуть ошибка при дальнейшей работе из-за нарушения упорядочивания(поиск по id например). Переделать
+        //При удалении столика/бронирования из списка может возникнуть ошибка при дальнейшей работе из-за нарушения упорядочивания(поиск по id например). Переделать(ВАЩЕ ПОФИГ НИКТО НЕ УЗНАЕТ)
         //Вынести проверку свободен ли столик в указанное время в отдельный метод
         //Добавить возможность ввода промежутка для количества мест, локации, нескольких промежутков времени(необязательно но хочу очень)
-        //Изменить отмену бронирования. Сделать отмену по последним 4 цифрам номера телефона
         //Везде добавить фразы по типу "Нет активных бронирований", "Нет фильтров" и тд
         //Переделать список блюд в список списков блюд(список содержит списки блюд по категориям)
         //Поправить вывод меню так, чтобы ценники были в ровный столбик
@@ -190,26 +186,99 @@ public class Program
     public static void OrderCloser()
     {
         Console.Write("Введите номер заказа: ");
-        int id = int.Parse(Console.ReadLine());
-        orders.FirstOrDefault(x => x.Id == id).OrderClose();
+        int id = 7632;
+        for (int i = 0; i < 3; i++)
+        {
+            if (int.TryParse(Console.ReadLine(), out id) == false)
+            {
+                Console.WriteLine($"Некорректный ввод номера заказа! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if (id == 7632)
+        {
+            Console.WriteLine("Некорректный ввод номера заказа! Возврат в главное меню.");
+            return;
+        }
+        Order order = orders.FirstOrDefault(x => x.Id == id);
+        if (order == null)
+        {
+            Console.WriteLine("Заказ с таким номером не найден! Возврат в главное меню.");
+            return;
+        }
+        order.OrderClose();
     }
     public static void OrderInfoPrinter()
     {
         Console.Write("Введите номер заказа: ");
-        int id = int.Parse(Console.ReadLine());
-        orders.FirstOrDefault(x => x.Id == id).PrintInfo();
+        int id = 7632;
+        for (int i = 0; i < 3; i++)
+        {
+            if (int.TryParse(Console.ReadLine(), out id) == false)
+            {
+                Console.WriteLine($"Некорректный ввод номера заказа! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if (id == 7632)
+        {
+            Console.WriteLine("Некорректный ввод номера заказа! Возврат в главное меню.");
+            return;
+        }
+        Order order = orders.FirstOrDefault(x => x.Id == id);
+        if(order == null)
+        {
+            Console.WriteLine("Заказ с таким номером не найден! Возврат в главное меню.");
+            return;
+        }
+        Order.PrintInfo(order);
     }
     public static void OrderChanger()
     {
         Console.Write("Введите номер заказа: ");
-        int id = int.Parse(Console.ReadLine());
+        int id = 7632;
+        for (int i = 0; i < 3; i++)
+        {
+            if (int.TryParse(Console.ReadLine(), out id) == false)
+            {
+                Console.WriteLine($"Некорректный ввод номера заказа! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if (id == 7632)
+        {
+            Console.WriteLine("Некорректный ввод номера заказа! Возврат в главное меню.");
+            return;
+        }
         Order order = orders.FirstOrDefault(x => x.Id == id);
+        if (order == null)
+        {
+            Console.WriteLine("Заказ с таким номером не найден! Возврат в главное меню.");
+            return;
+        }
         Order.OrderChange(ref order);
     }
     public static void OrderCreator()
     {
         Console.Write("Введите количество создаваемых заказов: ");
-        int ordersCount = int.Parse(Console.ReadLine());
+        int ordersCount = 7632;
+        for (int i = 0; i < 3; i++)
+        {
+            if (int.TryParse(Console.ReadLine(), out ordersCount) == false)
+            {
+                Console.WriteLine($"Некорректный ввод количества заказов! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if(ordersCount == 7632)
+        {
+            Console.WriteLine("Некорректный ввод количества заказов! Возврат в главное меню.");
+            return;
+        }
         Order order;
         for (int i = 0; i < ordersCount; i++)
         {
@@ -222,21 +291,66 @@ public class Program
     public static void DishesChanger()
     {
         Console.Write("Введите название блюда: ");
-        string title = Console.ReadLine();
-        Dish dish = dishes.FirstOrDefault(x => x.Title == title);
+        Dish dish = null;
+        for (int i = 0; i < 3; i++)
+        {
+            string title = Console.ReadLine();
+            dish = dishes.FirstOrDefault(x => x.Title == title);
+            if (dish == null)
+            {
+                Console.WriteLine($"Блюдо не найдено! Проверьте корректность ввода и попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if (dish == null)
+        {
+            Console.WriteLine("Блюдо не найдено! Возврат в главное меню.");
+            return;
+        }
         Dish.DishChange(ref dish);
     }
     public static void DishesDeleter()
     {
         Console.Write("Введите название блюда, которое хотите удалить: ");
-        string title = Console.ReadLine();
-        dishes.FirstOrDefault(x => x.Title == title).DishDelete();
+        Dish dish = null;
+        for (int i = 0; i < 3; i++)
+        {
+            string title = Console.ReadLine();
+            dish = dishes.FirstOrDefault(x => x.Title == title);
+            if (dish == null)
+            {
+                Console.WriteLine($"Блюдо не найдено! Проверьте корректность ввода и попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if (dish == null)
+        {
+            Console.WriteLine("Блюдо не найдено! Возврат в главное меню.");
+            return;
+        }
+        dish.DishDelete();
     }
     public static void DishesCreator()
     {
         Console.WriteLine("---Система создания блюд---");
         Console.Write("Введите количество создаваемых блюд: ");
-        int dishesCount = int.Parse(Console.ReadLine());
+        int dishesCount = 7632;
+        for (int i = 0; i < 3; i++)
+        {
+            if (int.TryParse(Console.ReadLine(), out dishesCount) == false)
+            {
+                Console.WriteLine($"Некорректный ввод количества блюд! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if (dishesCount == 7632)
+        {
+            Console.WriteLine("Некорректный ввод количества блюд! Возврат в главное меню.");
+            return;
+        }
         Dish dish;
         for (int i = 0; i < dishesCount; i++)
         {
@@ -286,7 +400,22 @@ public class Program
             {
                 case ("1"):
                     Console.Write("Введите интересующее Вас количество мест: ");
-                    int seatsCount = int.Parse(Console.ReadLine());
+                    int seatsCount = 7632;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (int.TryParse(Console.ReadLine(), out seatsCount) == false)
+                        {
+                            Console.WriteLine($"Некорректный ввод количества заказов! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                            continue;
+                        }
+                        break;
+                    }
+                    if (seatsCount == 7632)
+                    {
+                        Console.WriteLine("Некорректный ввод количества заказов! Возврат в главное меню.");
+                        return;
+                    }
+
                     filters[0] = seatsCount.ToString();
                     break;
                 case ("2"):
@@ -296,8 +425,22 @@ public class Program
                         Console.WriteLine($"\t{i + 1} - {Table.locations[i]}");
                     }
                     Console.WriteLine("Введите номер интересующего Вас расположения столика: ");
-                    int location = int.Parse(Console.ReadLine()) - 1;
-                    filters[1] = Table.locations[location];
+                    int location = 7632;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (int.TryParse(Console.ReadLine(), out location) == false)
+                        {
+                            Console.WriteLine($"Некорректный ввод номера локации! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                            continue;
+                        }
+                        break;
+                    }
+                    if (location == 7632)
+                    {
+                        Console.WriteLine("Некорректный ввод номера локации! Возврат в главное меню.");
+                        return;
+                    }
+                    filters[1] = Table.locations[location - 1];
                     break;
                 case ("3"):
                     for (int j = 0; j < reservTime.Length; j++) Console.WriteLine($"{j + 1} - {reservTime[j]}");
@@ -356,25 +499,19 @@ public class Program
                     }
                     if (filters[2] != "none")
                     {
-                        //---------------- ошибка из-за обновления списка при переборе(хотя список не обновляется)
-                        reservStart = int.Parse(filters[2].Split('-')[0]);
-                        reservEnd = int.Parse(filters[2].Split('-')[1]);
+                        reservStart = 7632;
+                        if (int.TryParse(filters[2].Split('-')[0], out reservStart) == false)
+                        {
+                            Console.WriteLine($"Ошибка при обработке времени! Возврат в главное меню.");
+                            return;
+                        }
+                        reservEnd = 7632;
+                        if (int.TryParse(filters[2].Split('-')[1], out reservEnd) == false)
+                        {
+                            Console.WriteLine($"Ошибка при обработке времени! Возврат в главное меню.");
+                            return;
+                        }
 
-                        //foreach(var table in correctTables)
-                        //{
-                        //    int freeTimes = 0;
-                        //    for (int i = reservStart; i <= reservEnd; i++)
-                        //    {
-                        //        if (table.times[reservTime[i - 1]] == null)
-                        //        {
-                        //            freeTimes++;
-                        //        }
-                        //    }
-                        //    if(freeTimes == (1 + reservEnd - reservStart))
-                        //    {
-                        //        newCorrectTables.Add(table);
-                        //    }
-                        //}
                         correctTables = correctTables.Where(x => 
                         {
                             int freeTimes = 0;
@@ -428,17 +565,30 @@ public class Program
             Console.Clear();
         }
     }
-    public static void FindTableAtId()
+    public static Table FindTableAtId()
     {
         Console.Write("Введите номер столика: ");
-        int id = int.Parse(Console.ReadLine());
-        Table table = tables[id - 1];
-        table.PrintInfo();
+        int id = 7632;
+        for (int i = 0; i < 3; i++)
+        {
+            if (int.TryParse(Console.ReadLine(), out id) == false)
+            {
+                Console.WriteLine($"Некорректный ввод номера столика! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if (id == 7632)
+        {
+            Console.WriteLine("Некорректный ввод номера столика! Возврат в главное меню.");
+            return null;
+        }
+        Table table = tables.FirstOrDefault(x => x.id == id);
+        return table;
     }
     public static Reservation FindReservAtPhone()
     {
         Reservation reserv = null;
-        int index;
         for (int i = 1; i <= 3; i++)
         {
             Console.Write("Введите последние 4 цифры вашего телефона: ");
@@ -465,9 +615,7 @@ public class Program
     public static void TablesChanger()
     {
         Console.WriteLine("---Система редактирования столиков---");
-        Console.Write("Введите номер столика для редактирования: ");
-        int id = int.Parse(Console.ReadLine()) - 1;
-        Table table = tables.FirstOrDefault(x => x.id == id);
+        Table table = FindTableAtId();
         int index = tables.IndexOf(table);
         Table.TableChange(ref table);
         tables[index] = table;
@@ -496,10 +644,10 @@ public class Program
         Reservation reservForDelete;
         for (int i = 1; i <= 3; i++)
         {
-            Console.Write("Введите ваш номер телефона для отмены бронирования: ");
+            Console.Write("Введите последние 4 цифры вашего номера телефона для отмены бронирования: ");
             string phone = Console.ReadLine();
 
-            reservForDelete = reservs.Where(x => x.clientPhone == phone).FirstOrDefault();
+            reservForDelete = reservs.Where(x => new string(new char[] { x.clientPhone[^4], x.clientPhone[^3], x.clientPhone[^2], x.clientPhone[^1] }) == phone).FirstOrDefault();
             if(reservForDelete == null)
             {
                 Console.WriteLine($"Проверьте корретность ввода номера телефона и повторите.(попытка {i}/3)");
@@ -507,7 +655,6 @@ public class Program
             }
 
             reservForDelete.CancelReserv();
-            reservs.Remove(reservForDelete);
             return;
         }
 
@@ -533,7 +680,21 @@ public class Program
     {
         Console.WriteLine("---Система создания столиков---");
         Console.Write("Введите количество столиков для создания: ");
-        int tablesCount = int.Parse(Console.ReadLine());
+        int tablesCount = 7632;
+        for (int i = 0; i < 3; i++)
+        {
+            if (int.TryParse(Console.ReadLine(), out tablesCount) == false)
+            {
+                Console.WriteLine($"Некорректный ввод количества столиков! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if (tablesCount == 7632)
+        {
+            Console.WriteLine("Некорректный ввод количества столиков! Возврат в главное меню.");
+            return;
+        }
 
         bool locationsPrinted = false;
         Table table;
@@ -541,9 +702,37 @@ public class Program
         {
             if (!locationsPrinted) Console.WriteLine("\t1 - у окна\n\t2 - у прохода\n\t3 - у выхода\n\t4 - в глубине\n\t5 - у туалета");
             Console.Write("Введите номер расположения столика: ");
-            int location = int.Parse(Console.ReadLine());
+            int location = 7632;
+            for (int j = 0; j < 3; j++)
+            {
+                if (int.TryParse(Console.ReadLine(), out location) == false)
+                {
+                    Console.WriteLine($"Некорректный ввод количества заказов! Попробуйте ещё раз. (попытка {j + 1}/3)");
+                    continue;
+                }
+                break;
+            }
+            if (location == 7632)
+            {
+                Console.WriteLine("Некорректный ввод количества заказов! Возврат в главное меню.");
+                return;
+            }
             Console.Write("Введите количество сидячих мест: ");
-            int seatsCount = int.Parse(Console.ReadLine());
+            int seatsCount = 7632;
+            for (int j = 0; j < 3; j++)
+            {
+                if (int.TryParse(Console.ReadLine(), out seatsCount) == false)
+                {
+                    Console.WriteLine($"Некорректный ввод количества заказов! Попробуйте ещё раз. (попытка {j + 1}/3)");
+                    continue;
+                }
+                break;
+            }
+            if (seatsCount == 7632)
+            {
+                Console.WriteLine("Некорректный ввод количества заказов! Возврат в главное меню.");
+                return;
+            }
             Table.CreateTable(tables.Count(), location - 1, seatsCount, out table);
             tables.Add(table);
         }
@@ -553,10 +742,23 @@ public class Program
     public static void ReservsCreator()
     {
         Console.WriteLine("---Система создания бронирований---");
-        
 
         Console.Write("Введите количество бронирований для создания: ");
-        int reservsCount = int.Parse(Console.ReadLine());
+        int reservsCount = 7632;
+        for (int i = 0; i < 3; i++)
+        {
+            if (int.TryParse(Console.ReadLine(), out reservsCount) == false)
+            {
+                Console.WriteLine($"Некорректный ввод количества заказов! Попробуйте ещё раз. (попытка {i + 1}/3)");
+                continue;
+            }
+            break;
+        }
+        if (reservsCount == 7632)
+        {
+            Console.WriteLine("Некорректный ввод количества заказов! Возврат в главное меню.");
+            return;
+        }
 
         for (int i = 0; i < reservsCount; i++)
         {
@@ -566,9 +768,28 @@ public class Program
             Console.Write("Введите ваш номер телефона: ");
             string phone = Console.ReadLine();
 
+            Table tableReserved = FindTableAtId();
+            /*
             Console.Write("Введите номер столика: ");
-            int tableId = int.Parse(Console.ReadLine()) - 1;
-            Table tableReserved = tables[tableId];
+            int tableId;
+            Table tableReserved = null;
+            for (int j = 0; j < 3; j++)
+            {
+                tableId = int.Parse(Console.ReadLine()) - 1;
+                tableReserved = tables[tableId];
+                if(tableReserved == null)
+                {
+                    Console.WriteLine($"Столик не найден! Проверьте корретность введённого номера и попробуйте ещё раз. (попытка {i + 1}/3)");
+                    continue;
+                }
+                break;
+            }
+
+            if(tableReserved == null)
+            {
+                Console.WriteLine("Столик не найден! Возврат в главное меню.");
+                return;
+            }*/
 
             for (int j = 0; j < reservTime.Length; j++) Console.WriteLine($"{j + 1} - {reservTime[j]}");
 
@@ -626,9 +847,17 @@ public class Program
                     reservEnd = 7632;
                     if (timeReserved.Count() > 0)
                     {
+                        int count = 0;
                         Console.Write("Указанное время уже занято!(");
                         foreach (var reservedTime in timeReserved)
                         {
+                            count++;
+                            Console.Write("\n\t");
+                            if (count == timeReserved.Count())
+                            {
+                                Console.Write(reservedTime);
+                                break;
+                            }
                             Console.Write(reservedTime + " ");
                         }
                         Console.WriteLine(")");

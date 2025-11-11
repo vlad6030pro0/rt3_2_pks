@@ -79,8 +79,8 @@ namespace _21_10_25
         public void PrintInfo()
         {
             string info = "";
-            int baseSpace = Program.StarsNum;
-            int starsNum = 63;
+            int baseSpace = 5;
+            int starsNum = Program.StarsNum;
 
             string idLine = new string(' ', baseSpace) + "ID: ";
             if (id < 10) idLine += new string('-', starsNum - idLine.Length - 3) + $"0{id}.\n";

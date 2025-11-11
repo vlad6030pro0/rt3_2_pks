@@ -11,6 +11,7 @@ namespace _21_10_25
     {
         public int Id { get; set; }
         public int TableId { get; set; }
+        public Table Table { get; set; }
         public Dish[] Dishes { get; set; }
         public string Comment { get; set; }
         public string StartTime { get; set; } // Время ПРИНЯТИЯ заказа
@@ -27,7 +28,7 @@ namespace _21_10_25
             Comment = comment;
             StartTime = startTime;
             WaiterId = waiterId;
-
+            Table = Program.tables.FirstOrDefault(x => x.id == TableId);
         }
 
         public static void CreateOrder(int id, out Order order)
@@ -68,9 +69,9 @@ namespace _21_10_25
             order.Dishes = order.Dishes.Concat(dishes).ToArray();
             Console.WriteLine("Заказ обновлён!");
         }
-        public void PrintInfo()
+        public static void PrintInfo(in Order order)
         {
-            Console.WriteLine($"Номер заказа: {Id} Номер столика: {TableId} Текущая стоимость: {TotalCost} Имя официанта: {Program.Waiters.ElementAt(WaiterId).Key}");
+            Console.WriteLine($"Номер заказа: {order.Id} Номер столика: {order.TableId} Текущая стоимость: {order.TotalCost} Имя официанта: {Program.Waiters.ElementAt(order.WaiterId).Key}");
             // Номер заказа: 00 Номер столика: 00 Текущая стоимость: 00 Имя официанта: Петя
         }
         public void OrderClose()

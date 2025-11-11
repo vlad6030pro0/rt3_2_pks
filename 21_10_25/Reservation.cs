@@ -96,9 +96,17 @@ namespace _21_10_25
                     reservEnd = 7632;
                     if (timeReserved.Count() > 0)
                     {
+                        int count = 0;
                         Console.Write("Указанное время уже занято!(");
                         foreach (var reservedTime in timeReserved)
                         {
+                            count++;
+                            Console.Write("\n\t");
+                            if (count == timeReserved.Count())
+                            {
+                                Console.Write(reservedTime);
+                                break;
+                            }
                             Console.Write(reservedTime + " ");
                         }
                         Console.WriteLine(")");
@@ -120,6 +128,7 @@ namespace _21_10_25
         }
         public void CancelReserv()
         {
+            Program.reservs.Remove(this);
             for(int i = timeNumStart; i <= timeNumEnd; i++)
             {
                 tableReserv.times[reservTime[i - 1]] = null;
